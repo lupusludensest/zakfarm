@@ -1,0 +1,32 @@
+
+# Playwright
+# Node
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Playwright
+/playwright-report/
+/test-results/
+**/test-results/
+**/playwright-report/
+**/playwright/.cache/
+**/.cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
