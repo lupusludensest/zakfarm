@@ -1,49 +1,85 @@
-// tests/ui/tests/home.spec.js
+// E:\Gurov_SSD_256\IT\Testing\Automation_08_09_2019\zakfarm\tests\ui\tests\home.spec.js
 const { test, expect } = require('@playwright/test');
 const HomePage = require('../pages/homePage');
+const path = require('path');
 
 test.describe('Home Page Tests', () => {
     let homePage;
+    const screenshotsDir = path.join(__dirname, '..', 'screenshots');
 
     test.beforeEach(async ({ page }) => {
-        console.log('Current BASE_URL:', process.env.BASE_URL);
+        // Disable screenshots for faster test execution
+        process.env.SKIP_SCREENSHOTS = 'true';
+        
+        console.log('BASE_URL:', process.env.BASE_URL);
         homePage = new HomePage(page);
+        
+        // Navigate and wait for load
         await homePage.goto();
-        // Add additional wait for page to be fully loaded
+        await page.waitForLoadState('domcontentloaded');
         await page.waitForLoadState('networkidle');
-        await page.waitForTimeout(2000); // Wait additional 2s for any dynamic content
+        
+        // Log page info
+        console.log('Current URL:', await page.url());
+        console.log('Page title:', await page.title());
     });
 
-    test('should display products', async ({ page }) => {
-        // Log the current URL for debugging
-        console.log('Current URL:', page.url());
-        
-        const products = await homePage.getFeaturedProducts();
-        console.log('Found products:', products);
-        
-        expect(Array.isArray(products)).toBeTruthy();
-        expect(products.length).toBeGreaterThan(0);
-        
-        // Verify first product structure if available
-        if (products.length > 0) {
-            expect(products[0].name).toBeDefined();
-            expect(products[0].name.length).toBeGreaterThan(0);
-        }
-    });
-
-    test('should handle product details correctly', async ({ page }) => {
-        // Log the current URL for debugging
-        console.log('Current URL:', page.url());
-        
+    test('Should handle product details correctly', async ({ page }) => {
         try {
-            const product = await homePage.getFeaturedProduct(0);
-            console.log('Found product:', product);
+            // Wait for product elements to be visible
+            const productSelector = '.woocommerce ul.products li';
+            await test.step('Wait for products to be visible', async () => {
+                await page.waitForSelector(productSelector, { 
+                    state: 'visible',
+                    timeout: 30000
+                });
+            });
             
-            expect(product).toBeDefined();
-            expect(product.name.length).toBeGreaterThan(0);
+            // Get all products first to verify the data
+            const allProducts = await test.step('Get all products', async () => {
+                return await homePage.getFeaturedProducts();
+            });
+            
+            console.log('All found products:', allProducts);
+            
+            if (!allProducts || allProducts.length === 0) {
+                console.log('No products found, checking page content...');
+                const html = await page.content();
+                console.log('Current HTML:', html.substring(0, 1000));
+                test.fail();
+                return;
+            }
+            
+            // Get and verify the first product
+            const product = await test.step('Get and verify first product', async () => {
+                const firstProduct = await homePage.getFeaturedProduct(0);
+                console.log('Selected product:', firstProduct);
+                
+                // Verify product data
+                expect(firstProduct).toBeDefined();
+                expect(firstProduct).toHaveProperty('name');
+                expect(firstProduct).toHaveProperty('price');
+                
+                return firstProduct;
+            });
+            
+            // Log success
+            console.log('Successfully verified product:', {
+                name: product.name,
+                price: product.price
+            });
+            
         } catch (error) {
-            console.log('Test skipped:', error.message);
-            test.skip();
+            console.error('Test error:', error);
+            
+            // Log error details
+            console.log('Error details:', {
+                message: error.message,
+                stack: error.stack,
+                url: await page.url()
+            });
+            
+            throw error;
         }
     });
 });

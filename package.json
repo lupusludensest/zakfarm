@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "zakfarm/\r ├── .env\r ├── .gitignore\r ├── README.md\r ├── .github/\r │   └── workflows/\r │       └── main.yml\r ├── .vscode/\r │   └── mcp.json\r ├── tests/\r │   ├── ui/\r │   │   ├── README.md\r │   │   ├── pages/\r │   │   │   └── (Page Object files)\r │   │   ├── tests/\r │   │   │   └── (UI test files)\r │   │   └── utils/\r │   │       └── (Utility files for UI tests)\r │   ├── api/\r │   │   ├── README.md\r │   │   ├── tests/\r │   │   │   └── (API test files)\r │   │   └── utils/\r │   │       └── (Utility files for API tests)\r ├── playwright.config.js\r ├── package.json\r └── package-lock.json",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MTWhiteQA/zakfarm.git"
