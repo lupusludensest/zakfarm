@@ -61,28 +61,35 @@ jobs:
             playwright-report/
             test_output.log
 
-      - name: Send Playwright HTML report via email
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          secure: true
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          subject: Zakfarm Playwright Test Results - ${{ steps.parse-results.outputs.failed == '0' && 'SUCCESS' || 'FAILURE' }}
-          to: gurovvic@gmail.com
-          from: GitHub Actions
-          html_body: |
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-              <h2 style="color: #2563eb;">Zakfarm Playwright Test Results</h2>
-              <p><strong>Pass Rate:</strong> ${{ steps.parse-results.outputs.pass_rate }}%</p>
-              <p><strong>Total:</strong> ${{ steps.parse-results.outputs.total }}</p>
-              <p><strong>Passed:</strong> ${{ steps.parse-results.outputs.passed }}</p>
-              <p><strong>Failed:</strong> ${{ steps.parse-results.outputs.failed }}</p>
-              <p><strong>Flaky:</strong> ${{ steps.parse-results.outputs.flaky }}</p>
-              <p>
-                <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">View Workflow Run</a>
-              </p>
-            </div>
-          attachments: |
-            playwright-report/index.html
+      # Email sending is commented out due to authentication errors with Gmail
+      # To fix this error:
+      # 1. Enable 2-step verification for your Gmail account
+      # 2. Create an App Password (https://myaccount.google.com/apppasswords)
+      # 3. Use that App Password in GitHub secrets instead of your regular password
+      # 4. Uncomment the section below once fixed
+      
+      # - name: Send Playwright HTML report via email
+      #   uses: dawidd6/action-send-mail@v3
+      #   with:
+      #     server_address: smtp.gmail.com
+      #     server_port: 465
+      #     secure: true
+      #     username: ${{ secrets.MAIL_USERNAME }}
+      #     password: ${{ secrets.MAIL_PASSWORD }}
+      #     subject: Zakfarm Playwright Test Results - ${{ steps.parse-results.outputs.failed == '0' && 'SUCCESS' || 'FAILURE' }}
+      #     to: gurovvic@gmail.com
+      #     from: GitHub Actions
+      #     html_body: |
+      #       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      #         <h2 style="color: #2563eb;">Zakfarm Playwright Test Results</h2>
+      #         <p><strong>Pass Rate:</strong> ${{ steps.parse-results.outputs.pass_rate }}%</p>
+      #         <p><strong>Total:</strong> ${{ steps.parse-results.outputs.total }}</p>
+      #         <p><strong>Passed:</strong> ${{ steps.parse-results.outputs.passed }}</p>
+      #         <p><strong>Failed:</strong> ${{ steps.parse-results.outputs.failed }}</p>
+      #         <p><strong>Flaky:</strong> ${{ steps.parse-results.outputs.flaky }}</p>
+      #         <p>
+      #           <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">View Workflow Run</a>
+      #         </p>
+      #       </div>
+      #     attachments: |
+      #       playwright-report/index.html
