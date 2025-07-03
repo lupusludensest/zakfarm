@@ -2,198 +2,107 @@
 const { test, expect } = require('@playwright/test');
 const HomePage = require('../pages/homePage');
 
-// Etalonic product lists (as of now)
-const EN_PRODUCTS = [
-  { name: 'Box Premium', price: '$348.00' },
-  { name: 'Box Gold', price: '$256.00' },
-  { name: 'Box Standart', price: '$158.00' },
-  { name: 'Hallumi With Provencal Herbs', price: '$45.00' },
-  { name: 'Hallumi', price: '$45.00' },
-  { name: 'Cheese Sticks (Cecil Cheese)', price: '$40.00' },
-  { name: 'Suluguni Cheese (Head)', price: '$40.00' },
-  { name: 'Ossetian Cheese (Brynza). Middle-Salty, Ripe.', price: '$45.00' },
-  { name: 'NEW Cheese Plate Ossetian Cheese (Brynza) 170-200gr, Adygean Cheese 150 Gr, Cheese Sticks (Cecil Cheese) 120', price: '$40.00' },
-  { name: 'Adygean Cheese', price: '$45.00' },
-  { name: 'Ossetian Cheese (Brynza) Slightly Salty.', price: '$45.00' },
-  { name: 'Pancakes With Meat', price: '$20.00' },
-  { name: 'Pancakes With Cottage Cheese', price: '$20.00' },
-  { name: 'Сottage Cheesecake Gluten Free', price: '$25.00' },
-  { name: 'Cottage Cheesecake With Chocolate', price: '$20.00' },
-  { name: 'Сottage Cheesecake With Poppy', price: '$20.00' },
-  { name: 'Сottage Cheesecake With Raisins', price: '$20.00' },
-  { name: 'Georgian Cottage Cheesecake', price: '$23.00' },
-  { name: 'Сottage', price: '$20.00' },
-  { name: 'Matsoni', price: '$15.00' },
-  { name: 'Melted Butter', price: '$50.00' },
-  { name: 'Homemade Butter', price: '$30.00' },
-  { name: 'Сlassic Sour Cream', price: '$18.00' },
-  { name: 'Cottage Cheese With Fat Up To 5%', price: '$18.00' },
-  { name: 'Lobiani', price: '$30.00' },
-  { name: 'Ossetian Cherry Pie', price: '$40.00' },
-  { name: 'Ossetian Pie With Potatoes And Cheese', price: '$40.00' },
-  { name: 'Ossetian Meat Pie (Beef)', price: '$50.00' },
-  { name: 'Ossetian Pie With Cheese And Beet Leaves.', price: '$40.00' },
-  { name: 'Ossetian Pie With Cheese', price: '$40.00' },
-  { name: 'Cheese Khinkali', price: '$50.00' },
-  { name: 'Cheese And Mint Khinkali', price: '$50.00' },
-  { name: 'Beef & Lamb Khinkali', price: '$50.00' },
-  { name: 'Dumplings', price: '$45.00' },
-  { name: 'Khinkali (Meat Dumplings)', price: '$45.00' },
-  { name: 'Vareniki With Adygean Cheese', price: '$20.00' },
-  { name: 'Vareniki With Cottage Cheese', price: '$20.00' },
-  { name: 'Vareniki With Potatoes', price: '$15.00' },
-  { name: 'Vareniki With Cherries', price: '$20.00' },
-  { name: 'Khachapuri In Adjarian', price: '$25.00' },
-  { name: 'Pork Beer Sausages', price: '$12.00' },
-  { name: 'Krakowska Sausage', price: '$26.00' },
-  { name: 'Smoked Pork (Carbonade)', price: '$22.00' },
-  { name: 'Smoked Chicken Drumsticks (With Skin)', price: '$16.00' },
-  { name: 'Beef Loin TOP Sirloin Steak', price: '$85.00' },
-  { name: 'Beef Steak', price: '$125.00' },
-  { name: 'Breaded Chicken Cutlets 1 Lb', price: '$20.00' },
-  { name: 'Chicken Cutlets 1 Lb', price: '$20.00' },
-  { name: 'Breaded Pork/Beef Cutlets 1 Lb', price: '$25.00' },
-  { name: 'Pork/Beef Cutlets 1 Lb', price: '$25.00' },
-  { name: 'Free-Range Chicken Egg', price: '$10.00' },
-  { name: 'Organic Poultry Chicken (Frozen)', price: '$40.00' },
-  { name: 'Ground Turkey Chub', price: '$32.00' },
-  { name: 'Extra Lean Ground Turkey', price: '$34.00' },
-  { name: 'Ground Pork (Frozen)', price: '$25.00' },
-  { name: 'Pork Ham (Frozen)', price: '$20.00' },
-  { name: 'Rack Of Lamb (Grass-Fed)', price: '$75.00' },
-  { name: 'Leg Of Lamb (Grass-Fed) (Frozen)', price: '$75.00' },
-  { name: 'ABKHAZURA Georgian Meatballs (Frozen)', price: '$40.00' },
-  { name: 'Organic Goose, Whole (Frozen)', price: '$115.00' },
-  { name: 'Beef Jerky', price: '$20.00' },
-  { name: 'Smoked Beef Ribs', price: '$90.00' },
-  { name: 'Hot Smoked Pork Briskets', price: '$40.00' },
-  { name: 'Spinach Pkhali', price: '$40.00' },
-  { name: 'Beet Leaf Pkhali 1 Lb', price: '$40.00' },
-  { name: 'Ajapsandali (Frozen)', price: '$20.00' },
-  { name: 'Chakhokhbili (Frozen)', price: '$20.00' },
-  { name: 'Eggplant Rolls (Frozen)', price: '$25.00' },
-  { name: 'Lobio (Frozen)', price: '$20.00' },
-  { name: 'Churchkhela – Walnut, Prune & Dried Apricot', price: '$30.00' },
-  { name: 'Churchkhela Assorted (3 Pcs)', price: '$30.00' },
-  { name: 'Churchkhela – Fig & Prune (3 Pcs)', price: '$30.00' },
-  { name: 'Churchkhela – Walnut (3 Pcs)', price: '$30.00' },
-  { name: 'Churchkhela – Prune & Walnut (3 Pcs)', price: '$30.00' },
-  { name: 'Raspberry Pastilles', price: '$6.00' },
-  { name: 'Pineapple, Mango Pastilles', price: '$6.00' },
-  { name: 'Cherry Pastilles', price: '$5.00' },
-  { name: 'Seabuckthorn Pastilles', price: '$6.00' },
-  { name: 'Red Currant Pastilles', price: '$6.00' },
-  { name: 'Black Currant Pastilles', price: '$6.00' },
-  { name: 'Strawberry Mint Pastilles', price: '$6.00' },
-  { name: 'Chocolate Pastilles', price: '$6.00' },
-  { name: 'Banana Pastilles', price: '$6.00' },
-  { name: 'Strawberry Pastilles', price: '$6.00' },
-  { name: 'Apple Pastilles', price: '$6.00' },
-  { name: 'Black Forest Cake', price: '$80.00' },
-  { name: 'Mango-Passion Fruit Cake', price: '$80.00' },
-  { name: 'Kiev Cake', price: '$65.00' },
-  { name: 'Napoleon Cake', price: '$65.00' },
-  { name: 'Honey Cake', price: '$60.00' }
-];
-
-const RU_PRODUCTS = [
-  { name: 'Бокс Standart', price: '$158.00' },
-  { name: 'Бокс Gold', price: '$256.00' },
-  { name: 'Box Premium', price: '$348.00' },
-  { name: 'Сырная Тарелка', price: '$40.00' },
-  { name: 'Осетинский Сыр (Брынза) Среднесоленый, Выдержанный', price: '$45.00' },
-  { name: 'Сулугун Сыр', price: '$40.00' },
-  { name: 'Сырные Палочки (Сыр Чечил)', price: '$40.00' },
-  { name: 'Халлуми', price: '$45.00' },
-  { name: 'Халуми С Прованскими Травами', price: '$45.00' },
-  { name: 'Адыгейский Сыр', price: '$45.00' },
-  { name: 'Осетинский Сыр (Брынза) Слабосоленый', price: '$45.00' },
-  { name: 'Творог Жирностью До 5%', price: '$18.00' },
-  { name: 'Классическая Сметана', price: '$18.00' },
-  { name: 'Домашнее Сливочное Масло', price: '$30.00' },
-  { name: 'Топленое Масло (Гхи)', price: '$50.00' },
-  { name: 'Мацони', price: '$15.00' },
-  { name: 'Сырники', price: '$20.00' },
-  { name: 'Сырники «По-Грузински»', price: '$23.00' },
-  { name: 'Сырники С Изюмом', price: '$20.00' },
-  { name: 'Сырники С Маком', price: '$20.00' },
-  { name: 'Сырники С Шоколадом', price: '$20.00' },
-  { name: 'Сырники Gluten Free', price: '$25.00' },
-  { name: 'Блинчики С Творогом', price: '$20.00' },
-  { name: 'Блинчики С Мясом', price: '$20.00' },
-  { name: 'Лобиани', price: '$30.00' },
-  { name: 'Осетинский Пирог С Сыром', price: '$40.00' },
-  { name: 'Осетинский Пирог С Сыром И Листьями Свеклы', price: '$40.00' },
-  { name: 'Осетинский Пирог С Мясом (Говядина)', price: '$50.00' },
-  { name: 'Осетинский Пирог С Картофелем И Сыром', price: '$40.00' },
-  { name: 'Осетинский Пирог С Вишней', price: '$40.00' },
-  { name: 'Хинкали С Сыром', price: '$50.00' },
-  { name: 'Хинкали С Сыром И Мятой', price: '$50.00' },
-  { name: 'Хинкали С Говядиной И Бараниной', price: '$50.00' },
-  { name: 'Хинкали', price: '$45.00' },
-  { name: 'Пельмени', price: '$45.00' },
-  { name: 'Вареники С Адыгейским Сыром', price: '$20.00' },
-  { name: 'Вареники С Вишней', price: '$20.00' },
-  { name: 'Вареники С Картофелем', price: '$15.00' },
-  { name: 'Вареники С Творогом', price: '$20.00' },
-  { name: 'Хачапури По-Аджарски', price: '$25.00' },
-  { name: 'Колбаски Из Свинины Под Пиво', price: '$12.00' },
-  { name: 'Краковская Колбаса', price: '$26.00' },
-  { name: 'Копчёная Свинина (Карбонат)', price: '$22.00' },
-  { name: 'Копчёные Куриные Голени С Кожей', price: '$16.00' },
-  { name: 'Стейк Говяжий Топ-Сирлойн', price: '$85.00' },
-  { name: 'Говяжий Стейк', price: '$125.00' },
-  { name: 'Котлеты Куриные В Панировке 1 Lb', price: '$20.00' },
-  { name: 'Котлеты Куриные 1 Lb', price: '$20.00' },
-  { name: 'Котлеты Свинина/Говядина В Панировке 1 Lb', price: '$25.00' },
-  { name: 'Котлеты Свинина/Говядина 1 Lb', price: '$25.00' },
-  { name: 'АБХАЗУРА Грузинские Мясные Котлеты (Замороженные)', price: '$40.00' },
-  { name: 'Индюшка, Выращенная На Пастбище (Замороженная)', price: '$260.00' },
-  { name: 'Утка Фермерская (В Замороженном Виде)', price: '$90.00' },
-  { name: 'Органический Гусь Цельный (Замороженный)', price: '$115.00' },
-  { name: 'Нога Ягненка (Откормленного На Траве)', price: '$75.00' },
-  { name: 'Каре Ягненка (Откормленного На Траве)', price: '$75.00' },
-  { name: 'Свиной Окорок', price: '$20.00' },
-  { name: 'Фарш Свиной (Замороженный)', price: '$25.00' },
-  { name: 'Фарш Индюшачий Постный', price: '$34.00' },
-  { name: 'Фарш Индюшачий', price: '$32.00' },
-  { name: 'Джерки Вяленая Говядина', price: '$20.00' },
-  { name: 'Ребра Говяжьи Горячего Копчения', price: '$90.00' },
-  { name: 'Грудинка Свиная Горячего Копчения', price: '$40.00' },
-  { name: 'Пхали Из Шпината', price: '$40.00' },
-  { name: 'Пхали Из Свекольных Листьев', price: '$40.00' },
-  { name: 'Лобио (Замороженное)', price: '$20.00' },
-  { name: 'Рулетики Из Баклажанов (Замороженные)', price: '$25.00' },
-  { name: 'Чахохбили (Замороженное)', price: '$20.00' },
-  { name: 'Аджапсандали (Замороженный)', price: '$20.00' },
-  { name: 'Яблочная Пастила.', price: '$6.00' },
-  { name: 'Клубничная Пастила.', price: '$6.00' },
-  { name: 'Банановая Пастила.', price: '$6.00' },
-  { name: 'Шоколадная Пастила.', price: '$6.00' },
-  { name: 'Клубничная Пастила С Мятой.', price: '$6.00' },
-  { name: 'Пастила Из Черной Смородины.', price: '$6.00' },
-  { name: 'Пастила Из Красной Смородины.', price: '$6.00' },
-  { name: 'Облепиховая Пастила.', price: '$6.00' },
-  { name: 'Вишневая Пастила.', price: '$5.00' },
-  { name: 'Малиновая Пастила.', price: '$6.00' },
-  { name: 'Ананас-Манго Пастила', price: '$6.00' },
-  { name: 'Чурчхела – Чернослив И Грецкий Орех', price: '$30.00' },
-  { name: 'Чурчхела – Грецкий Орех', price: '$30.00' },
-  { name: 'Чурчхела – Инжир И Чернослив', price: '$30.00' },
-  { name: 'Чурчхела Ассорти – Грецкий Орех, Фундук, Грецкий', price: '$30.00' },
-  { name: 'Чурчхела – Грецкий Орех, Чернослив И Курага', price: '$30.00' },
-  { name: 'Торт Черный Лес (Black Forest)', price: '$80.00' },
-  { name: 'Торт Манго-Маракуйя', price: '$80.00' },
-  { name: 'Киевский Торт', price: '$65.00' },
-  { name: 'Наполеон', price: '$65.00' },
-  { name: 'Медовик', price: '$60.00' }
+// Combined product list with language-specific names
+const PRODUCTS = [
+  { en_name: 'Box Premium', ru_name: 'Box Premium', price: '$348.00' },
+  { en_name: 'Box Gold', ru_name: 'Бокс Gold', price: '$256.00' },
+  { en_name: 'Box Standart', ru_name: 'Бокс Standart', price: '$158.00' },
+  { en_name: 'Hallumi With Provencal Herbs', ru_name: 'Халуми С Прованскими Травами', price: '$45.00' },
+  { en_name: 'Hallumi', ru_name: 'Халлуми', price: '$45.00' },
+  { en_name: 'Cheese Sticks (Cecil Cheese)', ru_name: 'Сырные Палочки (Сыр Чечил)', price: '$40.00' },
+  { en_name: 'Suluguni Cheese (Head)', ru_name: 'Сулугун Сыр', price: '$40.00' },
+  { en_name: 'Ossetian Cheese (Brynza). Middle-Salty, Ripe.', ru_name: 'Осетинский Сыр (Брынза) Среднесоленый, Выдержанный', price: '$45.00' },
+  { en_name: 'NEW Cheese Plate Ossetian Cheese (Brynza) 170-200gr, Adygean Cheese 150 Gr, Cheese Sticks (Cecil Cheese) 120', ru_name: 'Сырная Тарелка', price: '$40.00' },
+  { en_name: 'Adygean Cheese', ru_name: 'Адыгейский Сыр', price: '$45.00' },
+  { en_name: 'Ossetian Cheese (Brynza) Slightly Salty.', ru_name: 'Осетинский Сыр (Брынза) Слабосоленый', price: '$45.00' },
+  { en_name: 'Pancakes With Meat', ru_name: 'Блинчики С Мясом', price: '$20.00' },
+  { en_name: 'Pancakes With Cottage Cheese', ru_name: 'Блинчики С Творогом', price: '$20.00' },
+  { en_name: 'Сottage Cheesecake Gluten Free', ru_name: 'Сырники Gluten Free', price: '$25.00' },
+  { en_name: 'Cottage Cheesecake With Chocolate', ru_name: 'Сырники С Шоколадом', price: '$20.00' },
+  { en_name: 'Сottage Cheesecake With Poppy', ru_name: 'Сырники С Маком', price: '$20.00' },
+  { en_name: 'Сottage Cheesecake With Raisins', ru_name: 'Сырники С Изюмом', price: '$20.00' },
+  { en_name: 'Georgian Cottage Cheesecake', ru_name: 'Сырники «По-Грузински»', price: '$23.00' },
+  { en_name: 'Сottage', ru_name: 'Сырники', price: '$20.00' },
+  { en_name: 'Matsoni', ru_name: 'Мацони', price: '$15.00' },
+  { en_name: 'Melted Butter', ru_name: 'Топленое Масло (Гхи)', price: '$50.00' },
+  { en_name: 'Homemade Butter', ru_name: 'Домашнее Сливочное Масло', price: '$30.00' },
+  { en_name: 'Сlassic Sour Cream', ru_name: 'Классическая Сметана', price: '$18.00' },
+  { en_name: 'Cottage Cheese With Fat Up To 5%', ru_name: 'Творог Жирностью До 5%', price: '$18.00' },
+  { en_name: 'Lobiani', ru_name: 'Лобиани', price: '$30.00' },
+  { en_name: 'Ossetian Cherry Pie', ru_name: 'Осетинский Пирог С Вишней', price: '$40.00' },
+  { en_name: 'Ossetian Pie With Potatoes And Cheese', ru_name: 'Осетинский Пирог С Картофелем И Сыром', price: '$40.00' },
+  { en_name: 'Ossetian Meat Pie (Beef)', ru_name: 'Осетинский Пирог С Мясом (Говядина)', price: '$50.00' },
+  { en_name: 'Ossetian Pie With Cheese And Beet Leaves.', ru_name: 'Осетинский Пирог С Сыром И Листьями Свеклы', price: '$40.00' },
+  { en_name: 'Ossetian Pie With Cheese', ru_name: 'Осетинский Пирог С Сыром', price: '$40.00' },
+  { en_name: 'Cheese Khinkali', ru_name: 'Хинкали С Сыром', price: '$50.00' },
+  { en_name: 'Cheese And Mint Khinkali', ru_name: 'Хинкали С Сыром И Мятой', price: '$50.00' },
+  { en_name: 'Beef & Lamb Khinkali', ru_name: 'Хинкали С Говядиной И Бараниной', price: '$50.00' },
+  { en_name: 'Dumplings', ru_name: 'Пельмени', price: '$45.00' },
+  { en_name: 'Khinkali (Meat Dumplings)', ru_name: 'Хинкали', price: '$45.00' },
+  { en_name: 'Vareniki With Adygean Cheese', ru_name: 'Вареники С Адыгейским Сыром', price: '$20.00' },
+  { en_name: 'Vareniki With Cottage Cheese', ru_name: 'Вареники С Творогом', price: '$20.00' },
+  { en_name: 'Vareniki With Potatoes', ru_name: 'Вареники С Картофелем', price: '$15.00' },
+  { en_name: 'Vareniki With Cherries', ru_name: 'Вареники С Вишней', price: '$20.00' },
+  { en_name: 'Khachapuri In Adjarian', ru_name: 'Хачапури По-Аджарски', price: '$25.00' },
+  { en_name: 'Pork Beer Sausages', ru_name: 'Колбаски Из Свинины Под Пиво', price: '$12.00' },
+  { en_name: 'Krakowska Sausage', ru_name: 'Краковская Колбаса', price: '$26.00' },
+  { en_name: 'Smoked Pork (Carbonade)', ru_name: 'Копчёная Свинина (Карбонат)', price: '$22.00' },
+  { en_name: 'Smoked Chicken Drumsticks (With Skin)', ru_name: 'Копчёные Куриные Голени С Кожей', price: '$16.00' },
+  { en_name: 'Beef Loin TOP Sirloin Steak', ru_name: 'Стейк Говяжий Топ-Сирлойн', price: '$85.00' },
+  { en_name: 'Beef Steak', ru_name: 'Говяжий Стейк', price: '$125.00' },
+  { en_name: 'Breaded Chicken Cutlets 1 Lb', ru_name: 'Котлеты Куриные В Панировке 1 Lb', price: '$20.00' },
+  { en_name: 'Chicken Cutlets 1 Lb', ru_name: 'Котлеты Куриные 1 Lb', price: '$20.00' },
+  { en_name: 'Breaded Pork/Beef Cutlets 1 Lb', ru_name: 'Котлеты Свинина/Говядина В Панировке 1 Lb', price: '$25.00' },
+  { en_name: 'Pork/Beef Cutlets 1 Lb', ru_name: 'Котлеты Свинина/Говядина 1 Lb', price: '$25.00' },
+  { en_name: 'Free-Range Chicken Egg', ru_name: 'Яйцо Домашнее', price: '$10.00' },
+  { en_name: 'Organic Poultry Chicken (Frozen)', ru_name: 'Куриное Мясо Органическое (Замороженное)', price: '$40.00' },
+  { en_name: 'Ground Turkey Chub', ru_name: 'Фарш Индюшачий', price: '$32.00' },
+  { en_name: 'Extra Lean Ground Turkey', ru_name: 'Фарш Индюшачий Постный', price: '$34.00' },
+  { en_name: 'Ground Pork (Frozen)', ru_name: 'Фарш Свиной (Замороженный)', price: '$25.00' },
+  { en_name: 'Pork Ham (Frozen)', ru_name: 'Свиной Окорок', price: '$20.00' },
+  { en_name: 'Rack Of Lamb (Grass-Fed)', ru_name: 'Каре Ягненка (Откормленного На Траве)', price: '$75.00' },
+  { en_name: 'Leg Of Lamb (Grass-Fed) (Frozen)', ru_name: 'Нога Ягненка (Откормленного На Траве)', price: '$75.00' },
+  { en_name: 'ABKHAZURA Georgian Meatballs (Frozen)', ru_name: 'АБХАЗУРА Грузинские Мясные Котлеты (Замороженные)', price: '$40.00' },
+  { en_name: 'Organic Goose, Whole (Frozen)', ru_name: 'Органический Гусь Цельный (Замороженный)', price: '$115.00' },
+  { en_name: 'Farm Duck (Frozen)', ru_name: 'Утка Фермерская (В Замороженном Виде)', price: '$90.00' },
+  { en_name: 'Pasture-Raised Turkey (Frozen)', ru_name: 'Индюшка, Выращенная На Пастбище (Замороженная)', price: '$260.00' },
+  { en_name: 'Beef Jerky', ru_name: 'Джерки Вяленая Говядина', price: '$20.00' },
+  { en_name: 'Smoked Beef Ribs', ru_name: 'Ребра Говяжьи Горячего Копчения', price: '$90.00' },
+  { en_name: 'Hot Smoked Pork Briskets', ru_name: 'Грудинка Свиная Горячего Копчения', price: '$40.00' },
+  { en_name: 'Spinach Pkhali', ru_name: 'Пхали Из Шпината', price: '$40.00' },
+  { en_name: 'Beet Leaf Pkhali 1 Lb', ru_name: 'Пхали Из Свекольных Листьев', price: '$40.00' },
+  { en_name: 'Ajapsandali (Frozen)', ru_name: 'Аджапсандали (Замороженный)', price: '$20.00' },
+  { en_name: 'Chakhokhbili (Frozen)', ru_name: 'Чахохбили (Замороженное)', price: '$20.00' },
+  { en_name: 'Eggplant Rolls (Frozen)', ru_name: 'Рулетики Из Баклажанов (Замороженные)', price: '$25.00' },
+  { en_name: 'Lobio (Frozen)', ru_name: 'Лобио (Замороженное)', price: '$20.00' },
+  { en_name: 'Churchkhela – Walnut, Prune & Dried Apricot', ru_name: 'Чурчхела – Грецкий Орех, Чернослив И Курага', price: '$30.00' },
+  { en_name: 'Churchkhela Assorted (3 Pcs)', ru_name: 'Чурчхела Ассорти – Грецкий Орех, Фундук, Грецкий', price: '$30.00' },
+  { en_name: 'Churchkhela – Fig & Prune (3 Pcs)', ru_name: 'Чурчхела – Инжир И Чернослив', price: '$30.00' },
+  { en_name: 'Churchkhela – Walnut (3 Pcs)', ru_name: 'Чурчхела – Грецкий Орех', price: '$30.00' },
+  { en_name: 'Churchkhela – Prune & Walnut (3 Pcs)', ru_name: 'Чурчхела – Чернослив И Грецкий Орех', price: '$30.00' },
+  { en_name: 'Raspberry Pastilles', ru_name: 'Малиновая Пастила.', price: '$6.00' },
+  { en_name: 'Pineapple, Mango Pastilles', ru_name: 'Ананас-Манго Пастила', price: '$6.00' },
+  { en_name: 'Cherry Pastilles', ru_name: 'Вишневая Пастила.', price: '$5.00' },
+  { en_name: 'Seabuckthorn Pastilles', ru_name: 'Облепиховая Пастила.', price: '$6.00' },
+  { en_name: 'Red Currant Pastilles', ru_name: 'Пастила Из Красной Смородины.', price: '$6.00' },
+  { en_name: 'Black Currant Pastilles', ru_name: 'Пастила Из Черной Смородины.', price: '$6.00' },
+  { en_name: 'Strawberry Mint Pastilles', ru_name: 'Клубничная Пастила С Мятой.', price: '$6.00' },
+  { en_name: 'Chocolate Pastilles', ru_name: 'Шоколадная Пастила.', price: '$6.00' },
+  { en_name: 'Banana Pastilles', ru_name: 'Банановая Пастила.', price: '$6.00' },
+  { en_name: 'Strawberry Pastilles', ru_name: 'Клубничная Пастила.', price: '$6.00' },
+  { en_name: 'Apple Pastilles', ru_name: 'Яблочная Пастила.', price: '$6.00' },
+  { en_name: 'Black Forest Cake', ru_name: 'Торт Черный Лес (Black Forest)', price: '$80.00' },
+  { en_name: 'Mango-Passion Fruit Cake', ru_name: 'Торт Манго-Маракуйя', price: '$80.00' },
+  { en_name: 'Kiev Cake', ru_name: 'Киевский Торт', price: '$65.00' },
+  { en_name: 'Napoleon Cake', ru_name: 'Наполеон', price: '$65.00' },
+  { en_name: 'Honey Cake', ru_name: 'Медовик', price: '$60.00' }
 ];
 
 function normalize(str) {
   return str.trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
-async function runProductDetailsTest(page, baseUrl, logLabel, etalonicProducts) {
+async function runProductDetailsTest(page, baseUrl, language) {
     const API_TIMEOUT = process.env.API_TIMEOUT ? parseInt(process.env.API_TIMEOUT) : 30000;
     await page.goto(baseUrl, { timeout: API_TIMEOUT });
     await page.waitForLoadState('domcontentloaded', { timeout: API_TIMEOUT });
@@ -201,33 +110,44 @@ async function runProductDetailsTest(page, baseUrl, logLabel, etalonicProducts) 
     const productSelector = '.woocommerce ul.products li';
     await page.waitForSelector(productSelector, { state: 'visible', timeout: API_TIMEOUT });
     const allProducts = await homePage.getFeaturedProducts();
-    console.log(`All found products (${logLabel}):`, allProducts);
+    console.log(`All found products (${language}):`, allProducts);
     expect(allProducts && allProducts.length > 0).toBeTruthy();
 
+    const nameKey = language === 'EN' ? 'en_name' : 'ru_name';
     const missingProducts = [];
-    for (const expected of etalonicProducts) {
-        const match = allProducts.find(actual =>
-            normalize(actual.name) === normalize(expected.name) &&
-            actual.price.trim() === expected.price.trim()
-        );
-        if (!match) {
-            console.warn(`WARNING: Product not found: ${expected.name} (${expected.price})`);
-            missingProducts.push(`${expected.name} (${expected.price})`);
+    
+    for (const expected of PRODUCTS) {
+        if (!expected[nameKey]) {
+            console.warn(`Product missing ${language} name:`, expected);
+            continue;
+        }
+        
+        try {
+            const match = allProducts.find(actual =>
+                normalize(actual.name) === normalize(expected[nameKey]) &&
+                actual.price.trim() === expected.price.trim()
+            );
+            
+            expect(match).toBeTruthy();
+        } catch (error) {
+            missingProducts.push(`${expected[nameKey]} (${expected.price})`);
         }
     }
+    
     if (missingProducts.length > 0) {
         console.warn(`SUMMARY: ${missingProducts.length} products missing:`, missingProducts);
+        throw new Error(`${missingProducts.length} products are missing from the page`);
     }
 }
 
 test.describe('Home Page Tests', () => {
     test('Should handle product details correctly in English', async ({ page }) => {
         const BASE_URL = process.env.BASE_URL || 'https://zakfarm.com';
-        await runProductDetailsTest(page, BASE_URL, 'EN', EN_PRODUCTS);
+        await runProductDetailsTest(page, BASE_URL, 'EN');
     });
 
     test('Should handle product details correctly in Russian', async ({ page }) => {
         const BASE_URL_RU = process.env.BASE_URL_RU || 'https://zakfarm.com/ru';
-        await runProductDetailsTest(page, BASE_URL_RU, 'RU', RU_PRODUCTS);
+        await runProductDetailsTest(page, BASE_URL_RU, 'RU');
     });
 });
