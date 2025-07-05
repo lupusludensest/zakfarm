@@ -25,6 +25,10 @@ class Helpers {
     static generateRandomString(length) {
         return Math.random().toString(36).substring(2, length + 2);
     }
+
+    static normalize(str) {
+        return str.trim().toLowerCase().replace(/\s+/g, ' ');
+    }
 }
 
 module.exports = Helpers;
